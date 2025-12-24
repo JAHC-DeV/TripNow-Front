@@ -1,0 +1,69 @@
+@if (isOpen()) {
+  <div class="modal-overlay" (click)="onBackdropClick()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Crear Nueva Reserva</h2>
+        <button class="close-btn" (click)="close()" aria-label="Cerrar modal">
+          ×
+        </button>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="modal-body">
+        <div class="form-group">
+          <label for="email">Email del Cliente</label>
+          <input
+            id="email"
+            type="email"
+            formControlName="customerEmail"
+            placeholder="ejemplo@email.com"
+            required
+          />
+          @if (getControl('customerEmail')?.invalid && getControl('customerEmail')?.touched) {
+            <span class="error-message">Email inválido</span>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="country">País</label>
+          <input
+            id="country"
+            type="text"
+            formControlName="tripCountry"
+            placeholder="ej: ES, US, FR"
+            maxlength="2"
+            required
+          />
+          @if (getControl('tripCountry')?.invalid && getControl('tripCountry')?.touched) {
+            <span class="error-message">País inválido</span>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="amount">Cantidad de Personas</label>
+          <input
+            id="amount"
+            type="number"
+            formControlName="amount"
+            min="1"
+            placeholder="1"
+            required
+          />
+          @if (getControl('amount')?.invalid && getControl('amount')?.touched) {
+            <span class="error-message">Cantidad debe ser mayor a 0</span>
+          }
+        </div>
+      </form>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="close()">Cancelar</button>
+        <button
+          class="btn btn-primary"
+          (click)="onSubmit()"
+          [disabled]="!form.valid || reservationService.loading()"
+        >
+          {{ reservationService.loading() ? 'Creando...' : 'Crear Reserva' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

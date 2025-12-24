@@ -1,0 +1,94 @@
+<div class="trips-container">
+  <!-- Header con controles -->
+  <div class="trips-header">
+    <div class="header-content">
+      <h1>✈️ Reservas de Viajes</h1>
+      <p class="subtitle">Gestiona todas tus reservas en un solo lugar</p>
+    </div>
+  </div>
+
+  <!-- Sección de información de carga/error -->
+  @if (reservationService.loading()) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Cargando reservas...</p>
+    </div>
+  } @else if (reservationService.error()) {
+    <div class="error-state">
+      <div class="error-icon">⚠️</div>
+      <p class="error-message">{{ reservationService.error() }}</p>
+      <button class="btn btn-secondary" (click)="reload()">🔄 Reintentar</button>
+    </div>
+  } @else if (reservationService.reservations().length === 0) {
+    <div class="empty-state">
+      <div class="empty-icon">📭</div>
+      <h3>No hay reservas aún</h3>
+      <p>¡Crea tu primera reserva para comenzar!</p>
+      <button class="btn btn-primary" (click)="openCreateModal()">
+        🎫 Crear Primera Reserva
+      </button>
+    </div>
+  } @else {
+    <!-- Tabla responsive con animaciones -->
+    <div class="table-wrapper">
+      <table class="trips-table" role="table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Email</th>
+            <th>País</th>
+            <th>Personas</th>
+            <th>Estado</th>
+            <th>Riesgo</th>
+            <th>Fecha Creación</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (trip of reservationService.reservations(); track trip.id; let i = $index) {
+            <tr [class]="getStatusClass(trip.status)" (click)="openDetail(trip.id)"  [style.animation-delay]="i * 0.05 + 's'">
+              <td data-label="ID">{{ trip.id }}</td>
+              <td data-label="Email">{{ trip.customerEmail }}</td>
+              <td data-label="País">{{ trip.tripCountry }}</td>
+              <td data-label="Personas" class="text-center">{{ trip.amount }}</td>
+              <td data-label="Estado">
+                <span class="status-badge" [class]="getStatusClass(trip.status)">
+                  {{ getStatusLabel(trip.status) }}
+                </span>
+              </td>
+              <td data-label="Riesgo" class="text-center">
+                <div class="risk-score" [class]="'risk-' + getRiskLevel(trip.riskScore)">
+                  {{ trip.riskScore.toFixed(2) }}%
+                </div>
+              </td>
+              <td data-label="Fecha Creación">
+                {{ trip.createdAt | date: 'short' }}
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Footer con información -->
+    <div class="table-footer">
+      <p>Total de reservas: <strong>{{ reservationService.totalReservations() }}</strong></p>
+    </div>
+  }
+</div>
+
+<!-- Botón flotante siempre disponible -->
+<button
+  class="fab-button"
+  (click)="openCreateModal()"
+  title="Crear nueva reserva"
+  aria-label="Crear nueva reserva"
+>
+  <span class="fab-icon">+</span>
+</button>
+
+<!-- Modal para crear reserva -->
+<app-create-reservation-modal #createModal />
+
+<!-- Modal para detalles de la reserva -->
+<app-reservation-detail-modal #detailModal />
+

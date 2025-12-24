@@ -1,0 +1,87 @@
+@if (isOpen()) {
+<div class="modal-overlay" (click)="close()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+
+    <!-- Header -->
+    <div class="modal-header">
+      <h2>📄 Detalle de Reserva</h2>
+      <button class="close-btn" (click)="close()">×</button>
+    </div>
+
+    <!-- Body -->
+    <div class="modal-body">
+
+      @if (loading) {
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Cargando información...</p>
+      </div>
+      }
+
+      @else if (error) {
+      <div class="error-state">
+        <p>{{ error }}</p>
+        <button class="btn btn-secondary" (click)="loadreservation()">Reintentar</button>
+      </div>
+      }
+
+      @else if (reservation) {
+      <div class="info-grid">
+
+        <div class="info-item">
+          <span class="label">ID</span>
+          <span class="value">{{ reservation.id }}</span>
+        </div>
+
+        <div class="info-item">
+          <span class="label">Email</span>
+          <span class="value">{{ reservation.customerEmail }}</span>
+        </div>
+
+        <div class="info-item">
+          <span class="label">País</span>
+          <span class="value">{{ reservation!.tripCountry }}</span>
+        </div>
+
+        <div class="info-item">
+          <span class="label">Personas</span>
+          <span class="value">{{ reservation.amount }}</span>
+        </div>
+
+        <div class="info-item">
+          <span class="label">Estado</span>
+          <span class="status-badge status-{{ reservation!.status | lowercase }}">
+            {{ reservation.status }}
+          </span>
+        </div>
+
+        <div class="info-item">
+          <span class="label">Riesgo</span>
+          <span class="risk-score">
+            {{ reservation.riskScore.toFixed(2) }} %
+          </span>
+        </div>
+
+        <div class="info-item">
+          <span class="label">Creada</span>
+          <span class="value">{{ reservation!.createdAt | date:'medium' }}</span>
+        </div>
+
+        <div class="info-item">
+          <span class="label">Actualizada</span>
+          <span class="value">{{ reservation!.updatedAt! | date:'medium' }}</span>
+        </div>
+
+      </div>
+      }
+
+    </div>
+
+    <!-- Footer -->
+    <div class="modal-footer">
+      <button class="btn btn-secondary" (click)="close()">Cerrar</button>
+    </div>
+
+  </div>
+</div>
+}

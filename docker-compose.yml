@@ -1,0 +1,30 @@
+services:
+  # Frontend - Angular
+  tripnow-frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: tripnow-frontend
+    ports:
+      - "4200:4200"
+    environment:
+      - NODE_ENV=production
+      - API_URL=http://localhost:5213/api
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:4200"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    networks:
+      - tripnow-network
+    restart: unless-stopped
+
+networks:
+  tripnow-network:
+    driver: bridge
+
+volumes:
+  # Opcional: persistencia de datos backend
+  tripnow-data:
+    driver: local
